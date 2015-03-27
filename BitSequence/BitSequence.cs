@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BitSequence
 {
-    class BitSequence : IEquatable<BitSequence>
+    class BitSequence : IEquatable<BitSequence>, IComparable<BitSequence>
     {
         private static uint[] startprimes = new uint[32] { 1, 0x7FFFFFFF, 0x3FFFFFDD, 0x1FFFFFFD, 0xFFFFFC7, 0x7FFFFD9, 0x3FFFFFB, 0x1FFFFD9, 0xFFFFFD, 0x7FFFF1, 0x3FFFFD, 0x1FFFF7, 0xFFFFD, 0x7FFFF, 0x3FFFB, 0x1FFFF, 0xFFF1, 0x7FED, 0x3FFD, 0x1FFF, 0xFFD, 0x7F7, 0x3FD, 0x1FD, 0xFB, 0x7F, 0x3D, 0x1F, 0xD, 0x7, 0x3, 0x2 };
 
@@ -48,11 +48,36 @@ namespace BitSequence
             return bits.SequenceEqual(other.bits);
         }
 
+        public int CompareTo(BitSequence y)
+        {
+            int result = this.currentBit.CompareTo(y.currentBit);
+
+            if (result != 0)
+                return result;
+
+            int blocksCount = this.bits.Count;
+
+            result = blocksCount.CompareTo(y.bits.Count);
+
+            if (result != 0)
+                return result;
+
+            for (int i = 0; i < blocksCount; i++)
+            {
+                result = this.bits[i].CompareTo(y.bits[i]);
+                if (result != 0)
+                    return result;
+            }
+
+            return 0;
+        }
+
+
 
         public override bool Equals(Object obj)
         {
             BitSequence other = obj as BitSequence;
-            return bits.SequenceEqual(other.bits);
+            return bits.SequenceEqual(other.bits) && currentBit == other.currentBit;
         }
 
         public override int GetHashCode()

@@ -72,14 +72,13 @@ namespace BitSequence
         static void Main(string[] args)
         {
 
-            Console.WriteLine(new BitSequence(2, 31));
-            Console.WriteLine(new BitSequence(1, 30));
-            Console.WriteLine(new BitSequence(5, 0));
-            Console.ReadKey();
-            return;
+            //Console.WriteLine(new BitSequence(2, 31));
+            //Console.WriteLine(new BitSequence(1, 30));
+            //Console.WriteLine(new BitSequence(5, 0));
+            //Console.ReadKey();
+            //return;
 
-
-            int samplesCount = 1000000;
+            int samplesCount = 1000;
 
             
 
@@ -103,39 +102,108 @@ namespace BitSequence
 
 
 
-            // Test collisions
+            //// Test collisions
 
-            Console.WriteLine("Starting collision test");
+            //Console.WriteLine("Starting collision test");
 
-            Dictionary<int, BitSequence> hashDict = new Dictionary<int, BitSequence>(samplesCount);
-            HashSet<BitSequence> fullSet = new HashSet<BitSequence>();
+            //Dictionary<int, BitSequence> hashDict = new Dictionary<int, BitSequence>(samplesCount);
+            //HashSet<BitSequence> fullSet = new HashSet<BitSequence>();
 
-            int hashCollisions = 0;
-            int fullCollisions = 0;
+            //int hashCollisions = 0;
+            //int fullCollisions = 0;
 
-            foreach (BitSequence b in bs)
+            //foreach (BitSequence b in bs)
+            //{
+            //    int hash = b.GetHashCode();
+            //    bool hashContained = hashDict.ContainsKey(hash);
+            //    if (!hashContained)
+            //        hashDict[hash] = b;
+
+            //    if (fullSet.Contains(b))
+            //        fullCollisions++;
+            //    else
+            //    {
+            //        if (hashContained)
+            //            hashCollisions++;
+            //        fullSet.Add(b);
+            //    }
+            //}
+
+            //Console.WriteLine("  Hash collisions: " + hashCollisions);
+            //Console.WriteLine("  Full collisions: " + fullCollisions);
+
+            //Console.WriteLine("Finished collision test");
+
+
+            int found;
+            bool contained;
+            BitSequence b;
+
+
+
+
+
+            // SORTED DICTIONARY
+            SortedDictionary<BitSequence, int> sdic = new SortedDictionary<BitSequence, int>();
+
+            Console.WriteLine("Started sorted dictionary performance test - " + GC.GetTotalMemory(true).ToString());
+
+            s.Start();
+
+
+            for (int i = 0; i < samplesCount; i++)
             {
-                int hash = b.GetHashCode();
-                bool hashContained = hashDict.ContainsKey(hash);
-                if (!hashContained)
-                    hashDict[hash] = b;
+                b = bs[i];
+                contained = sdic.TryGetValue(b, out found);
 
-                if (fullSet.Contains(b))
-                    fullCollisions++;
-                else
-                {
-                    if (hashContained)
-                        hashCollisions++;
-                    fullSet.Add(b);
-                }
+                if (!contained)
+                    sdic[b] = i;
+
+                if ((i % 3) == 0)
+                    contained = sdic.TryGetValue(b, out found);
             }
 
-            Console.WriteLine("  Hash collisions: " + hashCollisions);
-            Console.WriteLine("  Full collisions: " + fullCollisions);
+            s.Stop();
 
-            Console.WriteLine("Finished collision test");
+            Console.WriteLine("Finished sorted dictionary performance test - " + s.ElapsedMilliseconds + " ms; " + GC.GetTotalMemory(false).ToString());
 
+
+
+            //// Dictionary performance test, with 1/3 returning cases
+
+            //Dictionary<BitSequence, int> dic = new Dictionary<BitSequence, int>();
+
+            //Console.WriteLine("Started dictionary performance test - " + GC.GetTotalMemory(true).ToString());
+
+            //s.Start();
+
+
+            //for (int i = 0; i < samplesCount; i++)
+            //{
+            //    b = bs[i];
+            //    contained = dic.TryGetValue(b, out found);
+
+            //    if (!contained)
+            //        dic[b] = i;
+
+            //    if ((i % 3) == 0)
+            //        contained = dic.TryGetValue(b, out found);
+            //}
+
+            //s.Stop();
+
+            //Console.WriteLine("Finished dictionary performance test - " + s.ElapsedMilliseconds + " ms; " + GC.GetTotalMemory(false).ToString());
+
+            
+
+
+            
+
+            
+            
+            
             Console.ReadKey();
+            
 
         }
     }
